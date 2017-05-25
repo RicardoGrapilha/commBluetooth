@@ -23,11 +23,11 @@
             </feature>
         </config-file>
 
-        <source-file src="src/android/com/jota/cordova/commBluetooth.java"
+        <source-file src="src/android/com/jota/cordova/CommBluetooth.java"
             target-dir="src/com/jota/cordova"/>
-        <source-file src="src/android/com/jota/cordova/commBluetoothService.java"
+     <!--   <source-file src="src/android/com/jota/cordova/CommBluetoothService.java"
             target-dir="src/com/jota/cordova"/>
-
+-->
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
