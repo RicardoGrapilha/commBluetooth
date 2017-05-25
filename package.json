@@ -1,0 +1,30 @@
+{
+  "name": "cordova-plugin-comm-bluetooth",
+  "version": "1.0.0",
+  "description": "Uses communication with cellular (server) and cellular (client) bluetooth, transferring data",
+  "main": "./www/commBluetooth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "cordova": {
+    "id": "cordova-plugin-comm-bluetooth",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RicardoGrapilha/commBluetooth.git"
+  },
+  "keywords": [
+    "bluetooth",
+    "cordova",
+    "ionic"
+  ],
+  "author": "João Ricardo Grapilha Lopes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RicardoGrapilha/commBluetooth/issues"
+  },
+  "homepage": "https://github.com/RicardoGrapilha/commBluetooth#readme"
+}

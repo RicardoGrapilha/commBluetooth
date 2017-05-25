@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin
+    xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-plugin-comm-bluetooth"
+    version="0.4.7">
+
+    <name>Comm Bluetooth</name>
+    <description>Bluetooth Communication Plugin</description>
+    <license>ISC</license>
+    <keywords>bluetooth , cordova , ionic</keywords>
+    <repo>https://github.com/RicardoGrapilha/commBluetooth.git</repo>
+
+    <js-module src="www/commBluetooth.js" name="commBluetooth">
+        <clobbers target="window.commBluetooth" />
+    </js-module>
+
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/widget">
+            <feature name="commBluetooth">
+                <param name="android-package" value="com.jota.cordova.commBluetooth"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/com/jota/cordova/commBluetooth.java"
+            target-dir="src/com/jota/cordova"/>
+        <source-file src="src/android/com/jota/cordova/commBluetoothService.java"
+            target-dir="src/com/jota/cordova"/>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        </config-file>
+
+    </platform>
+
+    <platform name="browser">
+        <js-module src="src/browser/commBluetooth.js" name="CommBluetooth_browser">
+            <clobbers target="window.commBluetooth" />
+        </js-module>
+
+    </platform>
+</plugin>
