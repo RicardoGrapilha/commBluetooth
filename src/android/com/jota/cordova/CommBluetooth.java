@@ -15,10 +15,10 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import org.apache.cordova.CordovaArgs;
-import org.apache.cordova.api.CordovaPlugin;
-import org.apache.cordova.api.CallbackContext;
-import org.apache.cordova.api.PluginResult;
-import org.apache.cordova.api.LOG;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
+import org.apache.cordova.LOG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class CommBluetooth extends CordovaPlugin {
     }
 
 
-    @Override
+    
     public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
     	boolean validAction = true;
     	LOG.d(TAG, "action = " + action);
@@ -61,7 +61,11 @@ public class CommBluetooth extends CordovaPlugin {
 				bluetoothAdapter.setName(newName);
 				callbackContext.success();
 				break;
-			
+			case ENABLE:
+				enableBluetoothCallback = callbackContext;
+	        	Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+	        	//cordova.startActivityForResult(this, intent, ENABLE_BLUETOOTH);
+				break;
 			default:
 				validAction = false;
 				break;
@@ -70,7 +74,7 @@ public class CommBluetooth extends CordovaPlugin {
     	return validAction;
     	
     }
-   private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
+    private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
         JSONArray deviceList = new JSONArray();
         Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
 
@@ -79,7 +83,6 @@ public class CommBluetooth extends CordovaPlugin {
         }
         callbackContext.success(deviceList);
     }
-   
     private JSONObject deviceToJSON(BluetoothDevice device) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("name", device.getName());
@@ -91,6 +94,11 @@ public class CommBluetooth extends CordovaPlugin {
         }
         return json;
     }
-    
+  
+    public void setActivityResultCallback(CordovaPlugin plugin) {
+        this.activityResultCallback = plugin;        
+    }
+
+   
 }
 
