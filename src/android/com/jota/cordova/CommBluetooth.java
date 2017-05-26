@@ -31,7 +31,7 @@ public class CommBluetooth extends CordovaPlugin {
     public static int SELECT_DISCOVERED_DEVICE = 3;
     private CallbackContext enableBluetoothCallback;
     private CordovaPlugin activityResultCallback;
-    ConnectionThread connect;
+    //ConnectionThread connect;
     private BluetoothAdapter bluetoothAdapter;
     private static final String TAG = "CommBluetooth";
     private enum Methods {
