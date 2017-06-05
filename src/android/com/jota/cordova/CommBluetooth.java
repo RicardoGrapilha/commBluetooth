@@ -64,8 +64,8 @@ public class CommBluetooth extends CordovaPlugin {
 				callbackContext.success();
 				break;
 			case ENABLE:
-				enableBluetoothCallback = callbackContext;
-	        	Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				enableAction( callbackContext);
+	        	
 	        	//cordova.startActivityForResult(this, intent, ENABLE_BLUETOOTH);
 	        	//org.apache.cordova.api.CordovaPlugin cordovaP = new org.apache.cordova.api.CordovaPlugin();
 	             // cordova.startActivityForResult(cordovaP ,intent, REQUEST_ENABLE_BLUETOOTH);
