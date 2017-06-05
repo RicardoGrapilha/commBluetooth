@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.sun.xml.internal.ws.api.addressing.AddressingPropertySet;
+
 import java.util.Set;
 
 public class CommBluetooth extends CordovaPlugin {
@@ -31,7 +33,7 @@ public class CommBluetooth extends CordovaPlugin {
     public static int SELECT_DISCOVERED_DEVICE = 3;
     private CallbackContext enableBluetoothCallback;
     private CordovaPlugin activityResultCallback;
-    ConnectionThread connect;
+    //ConnectionThread connect;
     private BluetoothAdapter bluetoothAdapter;
     private static final String TAG = "CommBluetooth";
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
@@ -66,8 +68,8 @@ public class CommBluetooth extends CordovaPlugin {
 				enableBluetoothCallback = callbackContext;
 	        	Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 	        	//cordova.startActivityForResult(this, intent, ENABLE_BLUETOOTH);
-	        	org.apache.cordova.api.CordovaPlugin cordovaP = new org.apache.cordova.api.CordovaPlugin();
-	              cordova.startActivityForResult(cordovaP ,intent, REQUEST_ENABLE_BLUETOOTH);
+	        	//org.apache.cordova.api.CordovaPlugin cordovaP = new org.apache.cordova.api.CordovaPlugin();
+	             // cordova.startActivityForResult(cordovaP ,intent, REQUEST_ENABLE_BLUETOOTH);
 				break;
 			 
 			default:
@@ -78,6 +80,88 @@ public class CommBluetooth extends CordovaPlugin {
     	return validAction;
     	
     }
+    private void enableAction(CallbackContext callbackContext) {
+        if (isNotInitialized(callbackContext, false)) {
+          return;
+        }
+
+        if (isNotDisabled(callbackContext)) {
+          return;
+        }
+
+        boolean result = bluetoothAdapter.enable();
+
+        if (!result) {
+          //Throw an enabling error
+          JSONObject returnObj = new JSONObject();
+
+          addProperty(returnObj,  "error", "enable");
+          addProperty(returnObj, "message", "Bluetooth not enabled");
+
+          callbackContext.error(returnObj);
+        }
+
+        //Else listen to initialize callback for enabling
+      }
+    private void addProperty(JSONObject returnObj, String string, String string2) {
+		// TODO Auto-generated method stub
+    	try {
+			returnObj.put(string, string2);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+    //Helpers to Check Conditions
+    private boolean isNotInitialized(CallbackContext callbackContext, boolean checkIsNotEnabled) {
+      if (bluetoothAdapter == null) {
+        JSONObject returnObj = new JSONObject();
+
+        addProperty(returnObj,  "error", "initialize");
+        addProperty(returnObj, "message",  "Bluetooth not initialized");
+
+        callbackContext.error(returnObj);
+
+        return true;
+      }
+
+      if (checkIsNotEnabled) {
+        return isNotEnabled(callbackContext);
+      } else {
+        return false;
+      }
+    }
+    private boolean isNotEnabled(CallbackContext callbackContext) {
+        if (!bluetoothAdapter.isEnabled()) {
+          JSONObject returnObj = new JSONObject();
+
+          addProperty(returnObj,  "error", "enable");
+          addProperty(returnObj, "message",  "Bluetooth not enabled");
+
+          callbackContext.error(returnObj);
+
+          return true;
+        }
+
+        return false;
+      }
+
+	private boolean isNotDisabled(CallbackContext callbackContext) {
+        if (bluetoothAdapter.isEnabled()) {
+          JSONObject returnObj = new JSONObject();
+
+          addProperty(returnObj, "error", "disable");
+          addProperty(returnObj, "message", "Bluetooth not disabled");
+
+          callbackContext.error(returnObj);
+
+          return true;
+        }
+
+        return false;
+      }
+
     private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
         JSONArray deviceList = new JSONArray();
         Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
