@@ -98,6 +98,14 @@ public class CommBluetooth extends CordovaPlugin {
           addProperty(returnObj, "message", "Bluetooth not enabled");
 
           callbackContext.error(returnObj);
+        }else{
+        	JSONObject returnObj = new JSONObject();
+
+            addProperty(returnObj,  "error", "enable");
+            addProperty(returnObj, "message", "Bluetooth enabled");
+
+            callbackContext.success(returnObj);
+
         }
 
         //Else listen to initialize callback for enabling
