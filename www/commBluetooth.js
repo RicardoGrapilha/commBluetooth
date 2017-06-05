@@ -10,9 +10,11 @@ module.exports = {
         cordova.exec(success, failure, "CommBluetooth", "list", []);
     },
 
-
     setName: function (newName) {
         cordova.exec(null, null, "CommBluetooth", "setName", [newName]);
+    },
+    enable: function () {
+        cordova.exec(null, null, "CommBluetooth", "ENABLE", []);
     }
 
 

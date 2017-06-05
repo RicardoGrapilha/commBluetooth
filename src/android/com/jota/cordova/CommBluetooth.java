@@ -31,9 +31,10 @@ public class CommBluetooth extends CordovaPlugin {
     public static int SELECT_DISCOVERED_DEVICE = 3;
     private CallbackContext enableBluetoothCallback;
     private CordovaPlugin activityResultCallback;
-    //ConnectionThread connect;
+    ConnectionThread connect;
     private BluetoothAdapter bluetoothAdapter;
     private static final String TAG = "CommBluetooth";
+    private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     private enum Methods {
     	LIST ,
         SET_NAME,
@@ -65,7 +66,10 @@ public class CommBluetooth extends CordovaPlugin {
 				enableBluetoothCallback = callbackContext;
 	        	Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 	        	//cordova.startActivityForResult(this, intent, ENABLE_BLUETOOTH);
+	        	org.apache.cordova.api.CordovaPlugin cordovaP = new org.apache.cordova.api.CordovaPlugin();
+	              cordova.startActivityForResult(cordovaP ,intent, REQUEST_ENABLE_BLUETOOTH);
 				break;
+			 
 			default:
 				validAction = false;
 				break;
@@ -94,11 +98,9 @@ public class CommBluetooth extends CordovaPlugin {
         }
         return json;
     }
-  
     public void setActivityResultCallback(CordovaPlugin plugin) {
-        this.activityResultCallback = plugin;        
+    	 this.activityResultCallback = plugin;
     }
-
    
 }
 

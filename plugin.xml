@@ -18,8 +18,8 @@
     <platform name="android">
 
         <config-file target="res/xml/config.xml" parent="/widget">
-            <feature name="commBluetooth">
-                <param name="android-package" value="com.jota.cordova.commBluetooth"/>
+            <feature name="CommBluetooth">
+                <param name="android-package" value="com.jota.cordova.CommBluetooth"/>
             </feature>
         </config-file>
 
