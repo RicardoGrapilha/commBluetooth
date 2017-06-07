@@ -1,43 +1,44 @@
 package com.jota.cordova;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.Settings;
-import android.util.Log;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.PluginResult;
+import android.content.Context;
 import org.apache.cordova.LOG;
 import org.json.JSONArray;
+import android.content.Intent;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.cordova.PluginResult;
+import android.app.Activity;
+import android.content.IntentFilter;
+import android.util.Log;
+import android.Manifest;
+
 
 import java.util.Set;
 
-public class CommBluetooth extends CordovaPlugin {
+public class CommBluetooth extends CordovaPlugin  {
 	public static int ENABLE_BLUETOOTH = 1;
 	public static int SELECT_PAIRED_DEVICE = 2;
 	public static int SELECT_DISCOVERED_DEVICE = 3;
-	private CallbackContext enableBluetoothCallback;
+	private CallbackContext enableBluetoothCallback
 	private CordovaPlugin activityResultCallback;
+    private CallbackContext deviceDiscoveredCallback;
+
 	// ConnectionThread connect;
 	private BluetoothAdapter bluetoothAdapter;
 	private static final String TAG = "CommBluetooth";
 	private static final int REQUEST_ENABLE_BLUETOOTH = 1;
+    private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private CallbackContext permissionCallback;
+    private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -49,7 +50,9 @@ public class CommBluetooth extends CordovaPlugin {
 		}
 
 		Methods method = Methods.valueOf(action);
-
+		
+		this.deviceDiscoveredCallback =callbackContext;
+		
 		switch (method) {
 			case LIST:
 				listBondedDevices(callbackContext);
@@ -62,6 +65,16 @@ public class CommBluetooth extends CordovaPlugin {
 			case ENABLE:
 				enableAction(callbackContext);
 				break;
+			case DISCOVER_UNPAIRED:
+				
+		            if (this.cordova.hasPermission(ACCESS_COARSE_LOCATION)) {
+		                discoverUnpairedDevices(callbackContext);
+		            } else {
+		                permissionCallback = callbackContext;
+		                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_COARSE_LOCATION);
+		            }
+
+		        break;
 			default:
 				validAction = false;
 				break;
@@ -163,6 +176,43 @@ public class CommBluetooth extends CordovaPlugin {
 
 		return false;
 	}
+	
+	private void discoverUnpairedDevices(final CallbackContext callbackContext) throws JSONException {
+
+		final CallbackContext ddc = deviceDiscoveredCallback;
+
+        final BroadcastReceiver discoverReceiver = new BroadcastReceiver() {
+
+            private JSONArray unpairedDevices = new JSONArray();
+
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    try {
+                    	JSONObject o = deviceToJSON(device);
+                        unpairedDevices.put(o);
+                        if (ddc != null) {
+                            org.apache.cordova.PluginResult res = new org.apache.cordova.PluginResult(PluginResult.Status.OK, o);
+                            res.setKeepCallback(true);
+                            ddc.sendPluginResult(res);
+                        }
+                    } catch (JSONException e) {
+                        // This shouldn't happen, log and ignore
+                        Log.e(TAG, "Problem converting device to JSON", e);
+                    }
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                    callbackContext.success(unpairedDevices);
+                    cordova.getActivity().unregisterReceiver(this);
+                }
+            }
+        };
+
+        Activity activity = cordova.getActivity();
+        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
+        bluetoothAdapter.startDiscovery();
+    }
 
 	private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
 		JSONArray deviceList = new JSONArray();
@@ -189,5 +239,6 @@ public class CommBluetooth extends CordovaPlugin {
 	public void setActivityResultCallback(CordovaPlugin plugin) {
 		this.activityResultCallback = plugin;
 	}
+	
 
 }
