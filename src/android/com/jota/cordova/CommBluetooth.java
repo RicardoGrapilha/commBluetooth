@@ -25,7 +25,7 @@ public class CommBluetooth extends CordovaPlugin  {
 	public static int ENABLE_BLUETOOTH = 1;
 	public static int SELECT_PAIRED_DEVICE = 2;
 	public static int SELECT_DISCOVERED_DEVICE = 3;
-	private CallbackContext enableBluetoothCallback
+	private CallbackContext enableBluetoothCallback;
 	private CordovaPlugin activityResultCallback;
     private CallbackContext deviceDiscoveredCallback;
 
