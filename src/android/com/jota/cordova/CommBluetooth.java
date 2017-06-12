@@ -86,7 +86,7 @@ public class CommBluetooth extends CordovaPlugin  {
 		return validAction;
 
 	}
-	private void verificaInicializa(CallbackContext callbackContext){
+	private void verificaInicializa(CallbackContext callbackContext, boolean funcaoInicializa){
 		if (isNotInitialized(callbackContext, false)) {
 			return;
 		}
@@ -94,9 +94,12 @@ public class CommBluetooth extends CordovaPlugin  {
 		if (isNotDisabled(callbackContext)) {
 			return;
 		}
+		if(!funcaoInicializa){
+			boolean result = bluetoothAdapter.enable();
+		}
 	}
 	private void enableAction(CallbackContext callbackContext) {
-		verificaInicializa(callbackContext);
+		verificaInicializa(callbackContext, true);
 		
 		boolean result = bluetoothAdapter.enable();
 
@@ -183,7 +186,8 @@ public class CommBluetooth extends CordovaPlugin  {
 	}
 	
 	private void discoverUnpairedDevices(final CallbackContext callbackContext) throws JSONException {
-
+		verificaInicializa(callbackContext, false);
+		
 		final CallbackContext ddc = deviceDiscoveredCallback;
 
         final BroadcastReceiver discoverReceiver = new BroadcastReceiver() {
@@ -220,7 +224,7 @@ public class CommBluetooth extends CordovaPlugin  {
     }
 
 	private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
-		verificaInicializa(callbackContext);
+		verificaInicializa(callbackContext, false);
 		
 		JSONArray deviceList = new JSONArray();
 		Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
