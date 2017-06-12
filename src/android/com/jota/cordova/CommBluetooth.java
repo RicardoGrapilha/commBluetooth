@@ -38,7 +38,7 @@ public class CommBluetooth extends CordovaPlugin  {
     private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -54,6 +54,9 @@ public class CommBluetooth extends CordovaPlugin  {
 		this.deviceDiscoveredCallback =callbackContext;
 		
 		switch (method) {
+			case CONNECT:
+			
+				break;
 			case LIST:
 				listBondedDevices(callbackContext);
 				break;
