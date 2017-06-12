@@ -193,7 +193,7 @@ public class CommBluetooth extends CordovaPlugin  {
                     	JSONObject o = deviceToJSON(device);
                         unpairedDevices.put(o);
                         if (ddc != null) {
-                            org.apache.cordova.PluginResult res = new org.apache.cordova.PluginResult(PluginResult.Status.OK, o);
+                            PluginResult res = new PluginResult(PluginResult.Status.OK, o);
                             res.setKeepCallback(true);
                             ddc.sendPluginResult(res);
                         }
