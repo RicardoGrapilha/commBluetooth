@@ -224,6 +224,7 @@ public class CommBluetooth extends CordovaPlugin  {
 	                            res.setKeepCallback(true);
 	                            ddc.sendPluginResult(res);
 	                        }
+	                        cordova.getActivity().unregisterReceiver(this);
                     	}
                     } catch (JSONException e) {
                         // This shouldn't happen, log and ignore
