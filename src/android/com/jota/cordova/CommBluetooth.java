@@ -220,7 +220,7 @@ public class CommBluetooth extends CordovaPlugin  {
                     		JSONObject o = deviceToJSON(device);
 	                        unpairedDevices.put(o);
 	                        if (ddc != null) {
-	                            PluginResult res = new PluginResult(PluginResult.Status.OK, o);
+	                            PluginResult res = new PluginResult(PluginResult.Status.OK, unpairedDevices);
 	                            res.setKeepCallback(true);
 	                            ddc.sendPluginResult(res);
 	                        }
@@ -230,10 +230,10 @@ public class CommBluetooth extends CordovaPlugin  {
                         // This shouldn't happen, log and ignore
                         Log.e(TAG, "Problem converting device to JSON", e);
                     }
-                }/* else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                     callbackContext.success(unpairedDevices);
                     cordova.getActivity().unregisterReceiver(this);
-                }*/
+                }
             }
         };
 
