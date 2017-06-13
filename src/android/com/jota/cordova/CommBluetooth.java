@@ -98,7 +98,7 @@ public class CommBluetooth extends CordovaPlugin  {
 		Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
 
 		for (BluetoothDevice device : bondedDevices) {
-			if(device.getName() == deviceName)
+			if(device.getName().equals(deviceName))
 				deviceList.put(deviceToJSON(device));
 		}
 		if(deviceList.length()>0)
@@ -215,7 +215,7 @@ public class CommBluetooth extends CordovaPlugin  {
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     try {
-                    	if(device.getName() == deviceName){
+                    	if(device.getName().equals(deviceName)){
                     		JSONObject o = deviceToJSON(device);
 	                        unpairedDevices.put(o);
 	                        if (ddc != null) {
