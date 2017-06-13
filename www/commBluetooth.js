@@ -18,7 +18,8 @@ module.exports = {
     },
     discoverUnpaired: function (success, failure) {
         cordova.exec(success, failure, "CommBluetooth", "DISCOVER_UNPAIRED", []);
+    },
+    searchByDeviceName: function (deviceName, success, failure) {
+        cordova.exec(success, failure, "CommBluetooth", "SEARCH_BY_DEVICE_NAME", [deviceName]);
     }
-
-
 };
