@@ -231,6 +231,13 @@ public class CommBluetooth extends CordovaPlugin  {
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                     callbackContext.success(unpairedDevices);
                     cordova.getActivity().unregisterReceiver(this);
+                }else{
+                	JSONObject returnObj = new JSONObject();
+
+        			addProperty(returnObj, "error", "discoverUnpairedDevices");
+        			addProperty(returnObj, "message", "Device not found");
+
+        			callbackContext.error(returnObj);
                 }
             }
         };
