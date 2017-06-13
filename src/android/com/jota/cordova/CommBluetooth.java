@@ -209,9 +209,10 @@ public class CommBluetooth extends CordovaPlugin  {
         final BroadcastReceiver discoverReceiver = new BroadcastReceiver() {
 
             private JSONArray unpairedDevices = new JSONArray();
-
+            @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
+                
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     try {
@@ -228,10 +229,10 @@ public class CommBluetooth extends CordovaPlugin  {
                         // This shouldn't happen, log and ignore
                         Log.e(TAG, "Problem converting device to JSON", e);
                     }
-                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                }/* else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                     callbackContext.success(unpairedDevices);
                     cordova.getActivity().unregisterReceiver(this);
-                }
+                }*/
             }
         };
 
