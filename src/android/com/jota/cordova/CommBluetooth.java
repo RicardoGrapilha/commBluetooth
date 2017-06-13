@@ -104,42 +104,7 @@ public class CommBluetooth extends CordovaPlugin  {
 		if(deviceList.length()>0)
 			callbackContext.success(deviceList);
 		else{
-			final CallbackContext ddc = deviceDiscoveredCallback;
-
-	        final BroadcastReceiver discoverReceiver = new BroadcastReceiver() {
-
-	            private JSONArray unpairedDevices = new JSONArray();
-
-	            public void onReceive(Context context, Intent intent) {
-	                String action = intent.getAction();
-	                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-	                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	                    try {
-	                    	if(device.getName() == deviceName){
-	                    		JSONObject o = deviceToJSON(device);
-		                        unpairedDevices.put(o);
-		                        if (ddc != null) {
-		                            PluginResult res = new PluginResult(PluginResult.Status.OK, o);
-		                            res.setKeepCallback(true);
-		                            ddc.sendPluginResult(res);
-		                        }
-	                    	}
-	                    	
-	                    } catch (JSONException e) {
-	                        // This shouldn't happen, log and ignore
-	                        Log.e(TAG, "Problem converting device to JSON", e);
-	                    }
-	                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-	                    callbackContext.success(unpairedDevices);
-	                    cordova.getActivity().unregisterReceiver(this);
-	                }
-	            }
-	        };
-
-	        Activity activity = cordova.getActivity();
-	        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-	        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
-	        bluetoothAdapter.startDiscovery();
+			discoverUnpairedDevices(callbackContext, deviceName);
 		}
 	}
 
@@ -235,6 +200,46 @@ public class CommBluetooth extends CordovaPlugin  {
 
 		return false;
 	}
+	
+	private void discoverUnpairedDevices(final CallbackContext callbackContext, final String deviceName) throws JSONException {
+		isEnabledBlueetooth();
+		
+		final CallbackContext ddc = deviceDiscoveredCallback;
+
+        final BroadcastReceiver discoverReceiver = new BroadcastReceiver() {
+
+            private JSONArray unpairedDevices = new JSONArray();
+
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    try {
+                    	if(device.getName() == deviceName){
+                    		JSONObject o = deviceToJSON(device);
+	                        unpairedDevices.put(o);
+	                        if (ddc != null) {
+	                            PluginResult res = new PluginResult(PluginResult.Status.OK, o);
+	                            res.setKeepCallback(true);
+	                            ddc.sendPluginResult(res);
+	                        }
+                    	}
+                    } catch (JSONException e) {
+                        // This shouldn't happen, log and ignore
+                        Log.e(TAG, "Problem converting device to JSON", e);
+                    }
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                    callbackContext.success(unpairedDevices);
+                    cordova.getActivity().unregisterReceiver(this);
+                }
+            }
+        };
+
+        Activity activity = cordova.getActivity();
+        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        activity.registerReceiver(discoverReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
+        bluetoothAdapter.startDiscovery();
+    }
 	
 	private void discoverUnpairedDevices(final CallbackContext callbackContext) throws JSONException {
 		isEnabledBlueetooth();
