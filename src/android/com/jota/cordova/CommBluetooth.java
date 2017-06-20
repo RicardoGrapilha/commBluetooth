@@ -59,8 +59,10 @@ public class CommBluetooth extends CordovaPlugin  {
 	            connect(args, secure, callbackContext);
 				break;
 			case DEVICE_SERVER:
-				connectionThread = new ConnectionThread(callbackContext);
-				if(connectionThread != null){
+				if(connectionThread == null)
+					connectionThread = new ConnectionThread(callbackContext);
+				
+				if( ! connectionThread.server ){
 					JSONObject returnObj = new JSONObject();
 
 					addProperty(returnObj, "message", "Bluetooth create server");
@@ -225,9 +227,10 @@ public class CommBluetooth extends CordovaPlugin  {
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
 
         if (device != null) {
+        	if(connectionThread == null)
+        		connectionThread = new ConnectionThread(macAddress, callbackContext);
             
-        	connectionThread = new ConnectionThread(macAddress, callbackContext);
-            StringBuffer buffer = new StringBuffer();
+        	StringBuffer buffer = new StringBuffer();
         	buffer.setLength(0);
 
             PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
