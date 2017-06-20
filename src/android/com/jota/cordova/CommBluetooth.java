@@ -36,6 +36,14 @@ public class CommBluetooth extends CordovaPlugin  {
     private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private CallbackContext permissionCallback;
     private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_READ = 2;
+    public static final String TOAST = "toast";    public static final int MESSAGE_STATE_CHANGE = 1;
+
+    public static final int MESSAGE_TOAST = 5;
+    public static final String DEVICE_NAME = "device_name";    public static final int MESSAGE_DEVICE_NAME = 4;
+
+    public static final int MESSAGE_READ_RAW = 6;
 
 	private enum Methods {
 		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE;
