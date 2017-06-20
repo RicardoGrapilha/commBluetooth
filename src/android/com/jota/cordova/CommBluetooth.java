@@ -17,6 +17,8 @@ import android.app.Activity;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.Manifest;
+import android.os.Handler;
+import android.os.Message;
 
 
 import java.util.Set;
@@ -25,34 +27,41 @@ public class CommBluetooth extends CordovaPlugin  {
 	public static int ENABLE_BLUETOOTH = 1;
 	public static int SELECT_PAIRED_DEVICE = 2;
 	public static int SELECT_DISCOVERED_DEVICE = 3;
-	private CallbackContext enableBluetoothCallback;
-	private CordovaPlugin activityResultCallback;
-    private CallbackContext deviceDiscoveredCallback;
-    private ConnectionThread  connectionThread;
-	// ConnectionThread connect;
-	private BluetoothAdapter bluetoothAdapter;
-	private static final String TAG = "CommBluetooth";
-	private static final int REQUEST_ENABLE_BLUETOOTH = 1;
-    private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private CallbackContext permissionCallback;
-    private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_READ = 2;
-    public static final String TOAST = "toast";    public static final int MESSAGE_STATE_CHANGE = 1;
-
-    public static final int MESSAGE_TOAST = 5;
-    public static final String DEVICE_NAME = "device_name";    public static final int MESSAGE_DEVICE_NAME = 4;
-
+	private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
+	public static final int MESSAGE_STATE_CHANGE = 1;
+	public static final int MESSAGE_READ = 2;
+	public static final int MESSAGE_WRITE = 3;
+	public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;    
     public static final int MESSAGE_READ_RAW = 6;
-
-	private enum Methods {
+   
+    private static final String TAG = "CommBluetooth";
+	public static final String DEVICE_NAME = "device_name"; 
+    private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    public static final String TOAST = "toast";  
+    StringBuffer buffer = new StringBuffer();
+    private String delimiter;
+    
+    private ConnectionThread  connectionThread;
+	private BluetoothAdapter bluetoothAdapter;
+    private CallbackContext connectCallback;
+    private CallbackContext rawDataAvailableCallback;
+    private CallbackContext dataAvailableCallback;
+    private CallbackContext deviceDiscoveredCallback;
+    private CommBluetoothService commBluetoothService ;
+   
+    private static final boolean D = true;
+    
+    private enum Methods {
 		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE;
 	}
-
+	
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		boolean validAction = true;
 		LOG.d(TAG, "action = " + action);
-
+		 if (commBluetoothService == null) {
+			 commBluetoothService  = new CommBluetoothService (mHandler);
+        }
 		if (bluetoothAdapter == null) {
 			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		}
@@ -111,7 +120,7 @@ public class CommBluetooth extends CordovaPlugin  {
 		            if (this.cordova.hasPermission(ACCESS_COARSE_LOCATION)) {
 		                discoverUnpairedDevices(callbackContext);
 		            } else {
-		                permissionCallback = callbackContext;
+		              
 		                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_COARSE_LOCATION);
 		            }
 
@@ -245,7 +254,7 @@ public class CommBluetooth extends CordovaPlugin  {
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
 
         if (device != null) {
-        	if(connectionThread == null)
+        	/*if(connectionThread == null)
         		connectionThread = new ConnectionThread(macAddress, callbackContext);
         	connectionThread.start();
         	
@@ -255,7 +264,14 @@ public class CommBluetooth extends CordovaPlugin  {
             PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
-            callbackContext.success("conectado");
+            callbackContext.success("conectado");*/
+        	connectCallback = callbackContext;
+            commBluetoothService.connect(device, secure);
+            buffer.setLength(0);
+
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
         } else {
             callbackContext.error("Could not connect to " + macAddress);
         }
@@ -364,13 +380,102 @@ public class CommBluetooth extends CordovaPlugin  {
 		return json;
 	}
 
-	public void setActivityResultCallback(CordovaPlugin plugin) {
-		this.activityResultCallback = plugin;
-	}
+	
 	private void isEnabledBlueetooth(){
 		if (!bluetoothAdapter.isEnabled())
 			bluetoothAdapter.enable();
 	}
-	
+	private final Handler mHandler = new Handler() {
 
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_READ:
+                   buffer.append((String)msg.obj);
+
+                   if (dataAvailableCallback != null) {
+                       sendDataToSubscriber();
+                   }
+
+                   break;
+                case MESSAGE_READ_RAW:
+                   if (rawDataAvailableCallback != null) {
+                       byte[] bytes = (byte[]) msg.obj;
+                       sendRawDataToSubscriber(bytes);
+                   }
+                   break;
+                case MESSAGE_STATE_CHANGE:
+
+                   if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                   switch (msg.arg1) {
+                       case CommBluetoothService.STATE_CONNECTED:
+                           Log.i(TAG, "BluetoothSerialService.STATE_CONNECTED");
+                           notifyConnectionSuccess();
+                           break;
+                       case CommBluetoothService.STATE_CONNECTING:
+                           Log.i(TAG, "BluetoothSerialService.STATE_CONNECTING");
+                           break;
+                       case CommBluetoothService.STATE_LISTEN:
+                           Log.i(TAG, "BluetoothSerialService.STATE_LISTEN");
+                           break;
+                       case CommBluetoothService.STATE_NONE:
+                           Log.i(TAG, "BluetoothSerialService.STATE_NONE");
+                           break;
+                   }
+                   break;
+               case MESSAGE_WRITE:
+                   //  byte[] writeBuf = (byte[]) msg.obj;
+                   //  String writeMessage = new String(writeBuf);
+                   //  Log.i(TAG, "Wrote: " + writeMessage);
+                   break;
+               case MESSAGE_DEVICE_NAME:
+                   Log.i(TAG, msg.getData().getString(DEVICE_NAME));
+                   break;
+               case MESSAGE_TOAST:
+                   String message = msg.getData().getString(TOAST);
+                   notifyConnectionLost(message);
+                   break;
+            }
+        }
+   };
+   private void notifyConnectionLost(String error) {
+       if (connectCallback != null) {
+           connectCallback.error(error);
+           connectCallback = null;
+       }
+   }
+
+   private void notifyConnectionSuccess() {
+       if (connectCallback != null) {
+           PluginResult result = new PluginResult(PluginResult.Status.OK);
+           result.setKeepCallback(true);
+           connectCallback.sendPluginResult(result);
+       }
+   }
+   private void sendRawDataToSubscriber(byte[] data) {
+       if (data != null && data.length > 0) {
+           PluginResult result = new PluginResult(PluginResult.Status.OK, data);
+           result.setKeepCallback(true);
+           rawDataAvailableCallback.sendPluginResult(result);
+       }
+   }
+
+   private void sendDataToSubscriber() {
+       String data = readUntil(delimiter);
+       if (data != null && data.length() > 0) {
+           PluginResult result = new PluginResult(PluginResult.Status.OK, data);
+           result.setKeepCallback(true);
+           dataAvailableCallback.sendPluginResult(result);
+
+           sendDataToSubscriber();
+       }
+   }
+   private String readUntil(String c) {
+       String data = "";
+       int index = buffer.indexOf(c, 0);
+       if (index > -1) {
+           data = buffer.substring(0, index + c.length());
+           buffer.delete(0, index + c.length());
+       }
+       return data;
+   }
 }
