@@ -38,7 +38,7 @@ public class CommBluetooth extends CordovaPlugin  {
     private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -57,6 +57,11 @@ public class CommBluetooth extends CordovaPlugin  {
 			case CONNECT:
 				boolean secure = true;
 	            connect(args, secure, callbackContext);
+				break;
+			case SEND_MESSAGE:
+				if(connectionThread == null)
+					connectionThread = new ConnectionThread(callbackContext);
+				sendMessage(args, callbackContext);
 				break;
 			case DEVICE_SERVER:
 				if(connectionThread == null)
@@ -111,6 +116,11 @@ public class CommBluetooth extends CordovaPlugin  {
 		return validAction;
 
 	}
+	public void sendMessage(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
+		String message = args.getString(0);
+        byte[] data =  message.getBytes();
+        connectionThread.write(data);
+    }
 	private void searchByDeviceName(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		String deviceName = args.getString(0);
 		
