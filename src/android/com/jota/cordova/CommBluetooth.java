@@ -73,7 +73,7 @@ public class CommBluetooth extends CordovaPlugin  {
 					addProperty(returnObj, "error", "DEVICE_SERVER");
 					addProperty(returnObj, "message", "Bluetooth not create server");
 
-					callbackContext.success(returnObj);
+					callbackContext.error(returnObj);
 
 				}
 				break;
