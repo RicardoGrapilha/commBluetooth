@@ -28,7 +28,7 @@ public class CommBluetooth extends CordovaPlugin  {
 	private CallbackContext enableBluetoothCallback;
 	private CordovaPlugin activityResultCallback;
     private CallbackContext deviceDiscoveredCallback;
-
+    private ConnectionThread  connectionThread;
 	// ConnectionThread connect;
 	private BluetoothAdapter bluetoothAdapter;
 	private static final String TAG = "CommBluetooth";
@@ -38,7 +38,7 @@ public class CommBluetooth extends CordovaPlugin  {
     private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -55,7 +55,27 @@ public class CommBluetooth extends CordovaPlugin  {
 		
 		switch (method) {
 			case CONNECT:
-			
+				boolean secure = true;
+	            connect(args, secure, callbackContext);
+				break;
+			case DEVICE_SERVER:
+				connectionThread = new ConnectionThread(callbackContext);
+				if(connectionThread != null){
+					JSONObject returnObj = new JSONObject();
+
+					addProperty(returnObj, "message", "Bluetooth create server");
+
+					callbackContext.success(returnObj);
+
+				}else{
+					JSONObject returnObj = new JSONObject();
+
+					addProperty(returnObj, "error", "DEVICE_SERVER");
+					addProperty(returnObj, "message", "Bluetooth not create server");
+
+					callbackContext.success(returnObj);
+
+				}
 				break;
 			case SEARCH_BY_DEVICE_NAME:
 				searchByDeviceName(args, callbackContext);
@@ -133,7 +153,7 @@ public class CommBluetooth extends CordovaPlugin  {
 			addProperty(returnObj, "error", "enable");
 			addProperty(returnObj, "message", "Bluetooth enabled");
 
-			callbackContext.success(returnObj);
+			callbackContext.error(returnObj);
 
 		}
 
@@ -200,7 +220,24 @@ public class CommBluetooth extends CordovaPlugin  {
 
 		return false;
 	}
-	
+	private void connect(CordovaArgs args, boolean secure, CallbackContext callbackContext) throws JSONException {
+        String macAddress = args.getString(0);
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
+
+        if (device != null) {
+            
+        	connectionThread = new ConnectionThread(macAddress, callbackContext);
+            StringBuffer buffer = new StringBuffer();
+        	buffer.setLength(0);
+
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
+
+        } else {
+            callbackContext.error("Could not connect to " + macAddress);
+        }
+    }
 	private void discoverUnpairedDevices(final CallbackContext callbackContext, final String deviceName) throws JSONException {
 		isEnabledBlueetooth();
 		
