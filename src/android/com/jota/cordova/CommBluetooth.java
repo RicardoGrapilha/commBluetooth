@@ -13,8 +13,6 @@ import android.content.Intent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.megster.cordova.BluetoothSerialService;
-
 import org.apache.cordova.PluginResult;
 import android.app.Activity;
 import android.content.IntentFilter;
