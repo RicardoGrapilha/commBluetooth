@@ -40,6 +40,9 @@ module.exports = {
     },
     arrayBufferToStr: function(arrayBuf){
     	return decodeBase64(String.fromCharCode.apply(null, new Uint8Array(arrayBuf)));
+    },
+    read: function (success, failure) {
+        cordova.exec(success, failure, "CommBluetooth", "READ", []);
     }
 };
 

@@ -56,7 +56,7 @@ public class CommBluetooth extends CordovaPlugin  {
     private static final boolean D = true;
     
     private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED,CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ;
 	}
 	
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -81,6 +81,9 @@ public class CommBluetooth extends CordovaPlugin  {
 			case SEND_MESSAGE:
 				//connectionThread = new ConnectionThread(callbackContext);
 				sendMessage(args, callbackContext);
+				break;
+			case READ:
+				callbackContext.success(handlerMessage);
 				break;
 			case DEVICE_SERVER:
 				//if(connectionThread == null)
