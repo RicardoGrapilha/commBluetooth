@@ -35,6 +35,7 @@ module.exports = {
         } else if (message instanceof Uint8Array) {
         	message = message.buffer;
         }
+        console.log("message para java", message);
         cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
     }
 };
