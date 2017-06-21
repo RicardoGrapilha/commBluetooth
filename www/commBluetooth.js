@@ -37,6 +37,9 @@ module.exports = {
         }
         console.log("message para java", message);
         cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
+    },
+    bufferToStr: function(buf){
+    	return String.fromCharCode.apply(null, new Uint16Array(buf));
     }
 };
 

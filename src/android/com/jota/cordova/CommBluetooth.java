@@ -138,6 +138,7 @@ public class CommBluetooth extends CordovaPlugin  {
 	public void sendMessage(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		String message = args.getString(0);
         byte[] data =  message.getBytes();
+        callbackContext.success(data);
         connectionThread.write(data);
     }
 	private void searchByDeviceName(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
