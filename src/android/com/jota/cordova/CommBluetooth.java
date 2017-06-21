@@ -83,7 +83,7 @@ public class CommBluetooth extends CordovaPlugin  {
 				sendMessage(args, callbackContext);
 				break;
 			case DEVICE_SERVER:
-				if(connectionThread == null)
+				//if(connectionThread == null)
 					connectionThread = new ConnectionThread(callbackContext);
 				connectionThread.start();
 				if( ! connectionThread.server ){
