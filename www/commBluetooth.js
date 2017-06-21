@@ -28,7 +28,7 @@ module.exports = {
     sendMessage: function (message, success, failure) {
     	// convert to ArrayBuffer
         if (typeof message === 'string') {
-        	message = stringToArrayBuffer(data);
+        	message = stringToArrayBuffer(message);
         } else if (message instanceof Array) {
             // assuming array of interger
         	message = new Uint8Array(message).buffer;
