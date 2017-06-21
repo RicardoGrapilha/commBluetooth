@@ -39,3 +39,11 @@ module.exports = {
         cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
     }
 };
+
+var stringToArrayBuffer = function(str) {
+    var ret = new Uint8Array(str.length);
+    for (var i = 0; i < str.length; i++) {
+        ret[i] = str.charCodeAt(i);
+    }
+    return ret.buffer;
+};
