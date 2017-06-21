@@ -25,7 +25,7 @@ module.exports = {
     deviceServer: function (success, failure) {
         cordova.exec(success, failure, "CommBluetooth", "DEVICE_SERVER", []);
     },
-    sendMessage: function (macAddress , message, success, failure) {
+    sendMessage: function (message, success, failure) {
     	// convert to ArrayBuffer
         if (typeof message === 'string') {
         	message = stringToArrayBuffer(data);
@@ -35,6 +35,6 @@ module.exports = {
         } else if (message instanceof Uint8Array) {
         	message = message.buffer;
         }
-        cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [macAddress , message]);
+        cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
     }
 };

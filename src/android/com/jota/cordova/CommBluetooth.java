@@ -12,6 +12,9 @@ import org.json.JSONArray;
 import android.content.Intent;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.megster.cordova.BluetoothSerialService;
+
 import org.apache.cordova.PluginResult;
 import android.app.Activity;
 import android.content.IntentFilter;
@@ -78,9 +81,7 @@ public class CommBluetooth extends CordovaPlugin  {
 	            connect(args, secure, callbackContext);
 				break;
 			case SEND_MESSAGE:
-				//if(connectionThread == null)
-				//	connectionThread = new ConnectionThread(callbackContext);
-				
+				//connectionThread = new ConnectionThread(callbackContext);
 				sendMessage(args, callbackContext);
 				break;
 			case DEVICE_SERVER:
@@ -137,11 +138,8 @@ public class CommBluetooth extends CordovaPlugin  {
 
 	}
 	public void sendMessage(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-		String macAddress = args.getString(0);
-		String message = args.getString(1);
+		String message = args.getString(0);
         byte[] data =  message.getBytes();
-        connectionThread = new ConnectionThread(macAddress, callbackContext);
-        
         connectionThread.write(data);
     }
 	private void searchByDeviceName(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
