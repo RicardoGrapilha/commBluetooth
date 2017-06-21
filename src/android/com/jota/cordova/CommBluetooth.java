@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.Manifest;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
@@ -41,6 +42,7 @@ public class CommBluetooth extends CordovaPlugin  {
     public static final String TOAST = "toast";  
     StringBuffer buffer = new StringBuffer();
     private String delimiter;
+    public static String handlerMessage;
     
     private ConnectionThread  connectionThread;
 	private BluetoothAdapter bluetoothAdapter;
@@ -49,7 +51,7 @@ public class CommBluetooth extends CordovaPlugin  {
     private CallbackContext dataAvailableCallback;
     private CallbackContext deviceDiscoveredCallback;
     private CommBluetoothService commBluetoothService ;
-   
+    
     private static final boolean D = true;
     
     private enum Methods {
@@ -250,11 +252,13 @@ public class CommBluetooth extends CordovaPlugin  {
 		return false;
 	}
 	private void connect(CordovaArgs args, boolean secure, CallbackContext callbackContext) throws JSONException {
-        String macAddress = args.getString(0);
+		isEnabledBlueetooth();
+		
+		String macAddress = args.getString(0);
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
 
         if (device != null) {
-        	/*if(connectionThread == null)
+        	//if(connectionThread == null)
         		connectionThread = new ConnectionThread(macAddress, callbackContext);
         	connectionThread.start();
         	
@@ -264,14 +268,14 @@ public class CommBluetooth extends CordovaPlugin  {
             PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
             result.setKeepCallback(true);
             callbackContext.sendPluginResult(result);
-            callbackContext.success("conectado");*/
+            /*callbackContext.success("conectado");
         	connectCallback = callbackContext;
             commBluetoothService.connect(device, secure);
             buffer.setLength(0);
 
             PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
             result.setKeepCallback(true);
-            callbackContext.sendPluginResult(result);
+            callbackContext.sendPluginResult(result);*/
         } else {
             callbackContext.error("Could not connect to " + macAddress);
         }
@@ -436,6 +440,25 @@ public class CommBluetooth extends CordovaPlugin  {
                    break;
             }
         }
+   };
+
+   public static Handler handler = new Handler() {
+       @Override
+       public void handleMessage(Message msg) {
+
+           Bundle bundle = msg.getData();
+           byte[] data = bundle.getByteArray("data");
+           String dataString= new String(data);
+
+           if(dataString.equals("---N"))
+               handlerMessage = "Ocorreu um erro durante a conexão D:";
+           else if(dataString.equals("---S"))
+        	   handlerMessage = "Conectado :D";
+           else {
+
+        	   handlerMessage = new String(data);
+           }
+       }
    };
    private void notifyConnectionLost(String error) {
        if (connectCallback != null) {

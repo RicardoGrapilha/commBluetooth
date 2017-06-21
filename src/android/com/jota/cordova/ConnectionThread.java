@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.os.Message;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -189,12 +191,13 @@ public class ConnectionThread extends Thread{
      */
     private void toMainActivity(byte[] data) {
 
-        //Message message = new Message();
-        //Bundle bundle = new Bundle();
-       // bundle.putByteArray("data", data);
-        //message.setData(bundle);
-        //CommBluetooth.handler.sendMessage(message);
-
+       Message message = new Message();
+       Bundle bundle = new Bundle();
+        bundle.putByteArray("data", data);
+        message.setData(bundle);
+        CommBluetooth.handler.sendMessage(message);
+        callbackContextThread.success(CommBluetooth.handlerMessage);
+/*
         String dataString= new String(data);
         
         if(dataString.equals("---N"))
@@ -204,7 +207,7 @@ public class ConnectionThread extends Thread{
         else {
         	callbackContextThread.success(new String(data));
         }
-        
+  */      
     }
 
     /*  Método utilizado pela Activity principal para transmitir uma mensagem ao
