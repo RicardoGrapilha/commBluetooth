@@ -86,7 +86,7 @@ public class CommBluetooth extends CordovaPlugin  {
 				//if(connectionThread == null)
 					connectionThread = new ConnectionThread(callbackContext);
 				connectionThread.start();
-				if( ! connectionThread.server ){
+				/*if( ! connectionThread.server ){
 					JSONObject returnObj = new JSONObject();
 
 					addProperty(returnObj, "message", "Bluetooth create server");
@@ -101,7 +101,7 @@ public class CommBluetooth extends CordovaPlugin  {
 
 					callbackContext.error(returnObj);
 
-				}
+				}*/
 				break;
 			case SEARCH_BY_DEVICE_NAME:
 				searchByDeviceName(args, callbackContext);
