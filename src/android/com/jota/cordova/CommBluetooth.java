@@ -78,8 +78,9 @@ public class CommBluetooth extends CordovaPlugin  {
 	            connect(args, secure, callbackContext);
 				break;
 			case SEND_MESSAGE:
-				if(connectionThread == null)
-					connectionThread = new ConnectionThread(callbackContext);
+				//if(connectionThread == null)
+				//	connectionThread = new ConnectionThread(callbackContext);
+				
 				sendMessage(args, callbackContext);
 				break;
 			case DEVICE_SERVER:
@@ -136,8 +137,11 @@ public class CommBluetooth extends CordovaPlugin  {
 
 	}
 	public void sendMessage(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-		String message = args.getString(0);
+		String macAddress = args.getString(0);
+		String message = args.getString(1);
         byte[] data =  message.getBytes();
+        connectionThread = new ConnectionThread(macAddress, callbackContext);
+        
         connectionThread.write(data);
     }
 	private void searchByDeviceName(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
