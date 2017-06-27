@@ -43,7 +43,11 @@ module.exports = {
     },
     read: function (success, failure) {
         cordova.exec(success, failure, "CommBluetooth", "READ", []);
+    },
+    disconnect: function (success,failure){
+    	cordova.exec(success, failure, "CommBluetooth", "DISCONNECT", []);
     }
+    
 };
 
 var stringToArrayBuffer = function(str) {
