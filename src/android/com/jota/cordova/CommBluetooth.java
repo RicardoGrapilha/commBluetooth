@@ -50,7 +50,6 @@ public class CommBluetooth extends CordovaPlugin {
 		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED, CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ,DISCONNECT;
 	}
 
-	@SuppressWarnings("deprecation")
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		boolean validAction = true;
 		LOG.d(TAG, "action = " + action);
@@ -103,8 +102,8 @@ public class CommBluetooth extends CordovaPlugin {
 
 			break;
 		case DISCONNECT:
-
-			connectionThread.stop();
+			
+			connectionThread.interrupt();
 			JSONObject returnObj = new JSONObject();
 
 			addProperty(returnObj, "message", "Bluetooth DISCONNECT");
