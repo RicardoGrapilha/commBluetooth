@@ -36,10 +36,4 @@
 
     </platform>
 
-    <platform name="browser">
-        <js-module src="src/browser/commBluetooth.js" name="CommBluetooth_browser">
-            <clobbers target="window.commBluetooth" />
-        </js-module>
-
-    </platform>
 </plugin>
