@@ -1,31 +1,35 @@
 /*global cordova*/
-module.exports = {
 
-    connect: function (macAddress, success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "CONNECT", [macAddress]);
-    },
+var commBluetooth = function() {
+};
+var exec = require('cordova/exec');
+
+
+    commBluetooth.connect = function (macAddress, success, failure) {
+        exec(success, failure, "CommBluetooth", "CONNECT", [macAddress]);
+    };
 
     // list bound devices
-    list: function (success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "LIST", []);
-    },
+    commBluetooth.list = function (success, failure) {
+        exec(success, failure, "CommBluetooth", "LIST", []);
+    };
 
-    setName: function (newName) {
-        cordova.exec(null, null, "CommBluetooth", "SET_NAME", [newName]);
-    },
-    enable: function (success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "ENABLE", []);
-    },
-    discoverUnpaired: function (success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "DISCOVER_UNPAIRED", []);
-    },
-    searchByDeviceName: function (deviceName, success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "SEARCH_BY_DEVICE_NAME", [deviceName]);
-    },
-    deviceServer: function (success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "DEVICE_SERVER", []);
-    },
-    sendMessage: function (message, success, failure) {
+    commBluetooth.setName = function (newName) {
+        exec(null, null, "CommBluetooth", "SET_NAME", [newName]);
+    };
+    commBluetooth.enable = function (success, failure) {
+        exec(success, failure, "CommBluetooth", "ENABLE", []);
+    };
+    commBluetooth.discoverUnpaired = function (success, failure) {
+        exec(success, failure, "CommBluetooth", "DISCOVER_UNPAIRED", []);
+    };
+    commBluetooth.searchByDeviceName = function (deviceName, success, failure) {
+        exec(success, failure, "CommBluetooth", "SEARCH_BY_DEVICE_NAME", [deviceName]);
+    };
+    commBluetooth.deviceServer = function (success, failure) {
+        exec(success, failure, "CommBluetooth", "DEVICE_SERVER", []);
+    };
+    commBluetooth.sendMessage = function (message, success, failure) {
     	// convert to ArrayBuffer
         if (typeof message === 'string') {
         	message = stringToArrayBuffer(message);
@@ -36,19 +40,19 @@ module.exports = {
         	message = message.buffer;
         }
         console.log("message para java", message);
-        cordova.exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
+        exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
     },
-    arrayBufferToStr: function(arrayBuf){
+    commBluetooth.arrayBufferToStr = function(arrayBuf){
     	return decodeBase64(String.fromCharCode.apply(null, new Uint8Array(arrayBuf)));
-    },
-    read: function (success, failure) {
-        cordova.exec(success, failure, "CommBluetooth", "READ", []);
-    },
-    disconnect: function (success,failure){
-    	cordova.exec(success, failure, "CommBluetooth", "DISCONNECT", []);
-    }
-    
-};
+    };
+    commBluetooth.read = function (success, failure) {
+        exec(success, failure, "CommBluetooth", "READ", []);
+    };
+    commBluetooth.disconnect = function (success,failure){
+    	exec(success, failure, "CommBluetooth", "DISCONNECT", []);
+    ;
+
+
 
 var stringToArrayBuffer = function(str) {
     var ret = new Uint8Array(str.length);
@@ -68,3 +72,6 @@ var decodeBase64 = function(s) {
     }
     return r;
 };
+
+
+module.exports = commBluetooth;
