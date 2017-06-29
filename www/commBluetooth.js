@@ -8,6 +8,9 @@ var exec = require('cordova/exec');
     commBluetooth.connect = function (macAddress, success, failure) {
         exec(success, failure, "CommBluetooth", "CONNECT", [macAddress]);
     };
+    commBluetooth.disconnect = function ( success, failure) {
+        exec(success, failure, "CommBluetooth", "DISCONNECT", []);
+    };
 
     // list bound devices
     commBluetooth.list = function (success, failure) {
