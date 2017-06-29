@@ -128,8 +128,6 @@ public class CommBluetooth extends CordovaPlugin {
 	private void searchByDeviceName(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		String deviceName = args.getString(0);
 
-		isEnabledBlueetooth();
-
 		JSONArray deviceList = new JSONArray();
 		Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
 
@@ -238,7 +236,6 @@ public class CommBluetooth extends CordovaPlugin {
 	}
 
 	private void connect(CordovaArgs args, boolean secure, CallbackContext callbackContext) throws JSONException {
-		isEnabledBlueetooth();
 
 		String macAddress = args.getString(0);
 		BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
@@ -261,7 +258,6 @@ public class CommBluetooth extends CordovaPlugin {
 
 	private void discoverUnpairedDevices(final CallbackContext callbackContext, final String deviceName)
 			throws JSONException {
-		isEnabledBlueetooth();
 
 		final CallbackContext ddc = deviceDiscoveredCallback;
 
@@ -304,7 +300,6 @@ public class CommBluetooth extends CordovaPlugin {
 	}
 
 	private void discoverUnpairedDevices(final CallbackContext callbackContext) throws JSONException {
-		isEnabledBlueetooth();
 
 		final CallbackContext ddc = deviceDiscoveredCallback;
 
@@ -342,7 +337,6 @@ public class CommBluetooth extends CordovaPlugin {
 	}
 
 	private void listBondedDevices(CallbackContext callbackContext) throws JSONException {
-		isEnabledBlueetooth();
 
 		JSONArray deviceList = new JSONArray();
 		Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
@@ -363,11 +357,6 @@ public class CommBluetooth extends CordovaPlugin {
 			json.put("class", device.getBluetoothClass().getDeviceClass());
 		}
 		return json;
-	}
-
-	private void isEnabledBlueetooth() {
-		if (!bluetoothAdapter.isEnabled())
-			bluetoothAdapter.enable();
 	}
 
 	public static Handler handler = new Handler() {
