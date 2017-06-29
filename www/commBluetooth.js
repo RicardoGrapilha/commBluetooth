@@ -31,14 +31,14 @@ var exec = require('cordova/exec');
     };
     commBluetooth.sendMessage = function (message, success, failure) {
     	// convert to ArrayBuffer
-        if (typeof message === 'string') {
+        /*if (typeof message === 'string') {
         	message = stringToArrayBuffer(message);
         } else if (message instanceof Array) {
             // assuming array of interger
         	message = new Uint8Array(message).buffer;
         } else if (message instanceof Uint8Array) {
         	message = message.buffer;
-        }
+        }*/
         console.log("message para java", message);
         exec(success, failure, "CommBluetooth", "SEND_MESSAGE", [message]);
     },
