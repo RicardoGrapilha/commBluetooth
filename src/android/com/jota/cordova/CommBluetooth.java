@@ -126,6 +126,13 @@ public class CommBluetooth extends CordovaPlugin {
 	}
 	public void isEnable(CallbackContext callbackContext) throws JSONException {
 		if (bluetoothAdapter.isEnabled()) {
+			JSONObject returnObj = new JSONObject();
+
+			addProperty(returnObj, "method", "isEnable");
+			addProperty(returnObj, "message", "Bluetooth is enabled");
+
+			callbackContext.success(returnObj);
+		} else {
 			// Throw an enabling error
 			JSONObject returnObj = new JSONObject();
 
@@ -133,13 +140,6 @@ public class CommBluetooth extends CordovaPlugin {
 			addProperty(returnObj, "message", "Bluetooth is not enabled");
 
 			callbackContext.error(returnObj);
-		} else {
-			JSONObject returnObj = new JSONObject();
-
-			addProperty(returnObj, "method", "isEnable");
-			addProperty(returnObj, "message", "Bluetooth is enabled");
-
-			callbackContext.success(returnObj);
 
 		}
 	}
