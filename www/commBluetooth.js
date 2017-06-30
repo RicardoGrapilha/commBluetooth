@@ -4,7 +4,9 @@ var commBluetooth = function() {
 };
 var exec = require('cordova/exec');
 
-
+	commBluetooth.getName = function (success, failure) {
+	    exec(success, failure, "CommBluetooth", "GET_NAME", []);
+	};
     commBluetooth.connect = function (macAddress, success, failure) {
         exec(success, failure, "CommBluetooth", "CONNECT", [macAddress]);
     };

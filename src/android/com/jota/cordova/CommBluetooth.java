@@ -47,7 +47,7 @@ public class CommBluetooth extends CordovaPlugin {
 	private CallbackContext deviceDiscoveredCallback;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED, CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ,DISCONNECT;
+		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED, CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ,DISCONNECT, GET_NAME;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -61,7 +61,7 @@ public class CommBluetooth extends CordovaPlugin {
 		Methods method = Methods.valueOf(action);
 
 		this.deviceDiscoveredCallback = callbackContext;
-
+		
 		switch (method) {
 		case CONNECT:
 			boolean secure = true;
@@ -82,6 +82,10 @@ public class CommBluetooth extends CordovaPlugin {
 			break;
 		case LIST:
 			listBondedDevices(callbackContext);
+			break;
+		case GET_NAME:
+			String nameDevice = bluetoothAdapter.getName();
+			callbackContext.success(nameDevice);
 			break;
 		case SET_NAME:
 			String newName = args.getString(0);
