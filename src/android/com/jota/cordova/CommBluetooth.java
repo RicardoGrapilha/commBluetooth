@@ -47,7 +47,7 @@ public class CommBluetooth extends CordovaPlugin {
 	private CallbackContext deviceDiscoveredCallback;
 
 	private enum Methods {
-		LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED, CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ,DISCONNECT, GET_NAME;
+		IS_ENABLE, LIST, SET_NAME, ENABLE, DISCOVER_UNPAIRED, CONNECT, SEARCH_BY_DEVICE_NAME, DEVICE_SERVER, SEND_MESSAGE, READ,DISCONNECT, GET_NAME;
 	}
 
 	public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
@@ -95,6 +95,9 @@ public class CommBluetooth extends CordovaPlugin {
 		case ENABLE:
 			enableAction(callbackContext);
 			break;
+		case IS_ENABLE:
+			isEnable(callbackContext);
+			break;
 		case DISCOVER_UNPAIRED:
 
 			if (this.cordova.hasPermission(ACCESS_COARSE_LOCATION)) {
@@ -121,7 +124,25 @@ public class CommBluetooth extends CordovaPlugin {
 		return validAction;
 
 	}
+	public void isEnable(CallbackContext callbackContext) throws JSONException {
+		if (bluetoothAdapter.isEnabled()) {
+			// Throw an enabling error
+			JSONObject returnObj = new JSONObject();
 
+			addProperty(returnObj, "method", "isEnable");
+			addProperty(returnObj, "message", "Bluetooth is not enabled");
+
+			callbackContext.error(returnObj);
+		} else {
+			JSONObject returnObj = new JSONObject();
+
+			addProperty(returnObj, "method", "isEnable");
+			addProperty(returnObj, "message", "Bluetooth is enabled");
+
+			callbackContext.success(returnObj);
+
+		}
+	}
 	public void sendMessage(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		String message = args.getString(0);
 		byte[] data = message.getBytes();
@@ -151,13 +172,9 @@ public class CommBluetooth extends CordovaPlugin {
 			return;
 		}
 
-		if (isNotDisabled(callbackContext)) {
-			return;
-		}
-
 		boolean result = bluetoothAdapter.enable();
 
-		if (!result) {
+		if (!result && !bluetoothAdapter.isEnabled()) {
 			// Throw an enabling error
 			JSONObject returnObj = new JSONObject();
 
@@ -224,20 +241,6 @@ public class CommBluetooth extends CordovaPlugin {
 		return false;
 	}
 
-	private boolean isNotDisabled(CallbackContext callbackContext) {
-		if (bluetoothAdapter.isEnabled()) {
-			JSONObject returnObj = new JSONObject();
-
-			addProperty(returnObj, "error", "disable");
-			addProperty(returnObj, "message", "Bluetooth not disabled");
-
-			callbackContext.error(returnObj);
-
-			return true;
-		}
-
-		return false;
-	}
 
 	private void connect(CordovaArgs args, boolean secure, CallbackContext callbackContext) throws JSONException {
 

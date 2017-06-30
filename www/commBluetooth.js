@@ -13,7 +13,9 @@ var exec = require('cordova/exec');
     commBluetooth.disconnect = function ( success, failure) {
         exec(success, failure, "CommBluetooth", "DISCONNECT", []);
     };
-
+    commBluetooth.isEnable = function ( success, failure) {
+        exec(success, failure, "CommBluetooth", "IS_ENABLE", []);
+    };
     // list bound devices
     commBluetooth.list = function (success, failure) {
         exec(success, failure, "CommBluetooth", "LIST", []);
